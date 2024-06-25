@@ -18,11 +18,6 @@ WORKDIR /usr/src/strapi
 
 # Копируем созданное Strapi-приложение из временного образа
 COPY --from=builder /tmp/strapi .
-#
-## Устанавливаем зависимости
-#RUN yarn install
-#
-#RUN yarn build
 
 # Открываем порт 1337, который используется Strapi
 EXPOSE 1337

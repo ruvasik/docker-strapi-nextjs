@@ -9,12 +9,6 @@ initial_build() {
   docker-compose -f docker-compose.build.yml build
   docker-compose -f docker-compose.build.yml up -d
 
-  # Мигрируем на yarn pnp
-  corepack enable
-  yarn set version berry
-  echo "nodeLinker: pnp" > .yarnrc.yml
-  yarn install
-
   container_id=$(docker-compose -f docker-compose.build.yml ps -q strapi)
   echo "Container ID: $container_id"
 
@@ -26,7 +20,7 @@ initial_build() {
   docker cp $container_id:/usr/src/strapi ./app
 
   # Остановите и удалите контейнеры после копирования
-  docker-compose -f docker-compose.build.yml down
+#  docker-compose -f docker-compose.build.yml down
 }
 
 # Функция для запуска контейнера с монтированием
