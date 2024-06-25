@@ -9,6 +9,12 @@ initial_build() {
   docker-compose -f docker-compose.build.yml build
   docker-compose -f docker-compose.build.yml up -d
 
+  # Мигрируем на yarn pnp
+  corepack enable
+  yarn set version berry
+  echo "nodeLinker: pnp" > .yarnrc.yml
+  yarn install
+
   container_id=$(docker-compose -f docker-compose.build.yml ps -q strapi)
   echo "Container ID: $container_id"
 
@@ -26,7 +32,7 @@ initial_build() {
 # Функция для запуска контейнера с монтированием
 run_with_volume() {
   echo "Running with volume mounted..."
-  docker-compose up -d
+  docker-compose up
 }
 
 # Проверьте, существует ли локальная директория ./app
@@ -36,8 +42,3 @@ fi
 
 # Запуск контейнера с монтированием
 run_with_volume
-
-# Вывести статус контейнеров
-docker-compose ps
-
-echo "Setup complete."
