@@ -1,0 +1,15 @@
+services:
+  strapi:
+    build:
+      context: .
+    ports:
+      - 1337:1337
+    volumes:
+      - type: bind
+        source: ./app
+        target: /usr/src/strapi
+    environment:
+      DATABASE_CLIENT: sqlite
+    working_dir: /usr/src/strapi
+    stdin_open: true  # Позволяет использовать интерактивный режим
+    tty: true         # Включает терминал
