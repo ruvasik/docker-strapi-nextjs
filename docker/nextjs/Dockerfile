@@ -12,7 +12,8 @@ WORKDIR /usr/app
 # Устанавливаем переменные окружения для Next.js
 ENV NODE_ENV=development
 
-EXPOSE 3000
+ENV PORT=$PORT
+EXPOSE $PORT
 
 # Указываем команду для запуска приложения
 CMD ["yarn", "dev"]

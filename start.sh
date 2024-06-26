@@ -1,18 +1,27 @@
 #!/bin/bash
 
-# Остановить скрипт при ошибке
+# Stop on error
 set -e
 
-# Запуск start1.sh в фоне
+
+if [ "$@" = "stop" ]; then
+  docker-compose -f docker/nextjs/docker-compose.build.yml stop
+  docker-compose -f docker/strapi/docker-compose.build.yml stop
+
+  exit 0
+fi
+
+
+# Run strapi in background
 echo "Backend strapi start..."
 ./docker/strapi/start.sh &
 PID1=$!
 
-# Запуск start2.sh в фоне
+# Run NextJS in background
 echo "Frontend nextjs start..."
 ./docker/nextjs/start.sh &
 PID2=$!
 
-# Ожидание завершения обоих процессов
+# Wait for strapi and nextjs to finish
 wait $PID1
 wait $PID2

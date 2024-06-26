@@ -4,7 +4,10 @@ services:
       context: ../..
       dockerfile: docker/nextjs/Dockerfile
     ports:
-      - 3000:3000
+      - ${PORT}:${PORT}
+    environment:
+      NODE_ENV: 'development'
+      PORT: ${PORT}
     working_dir: /usr/app
     stdin_open: true  # Позволяет использовать интерактивный режим
     tty: true         # Включает терминал

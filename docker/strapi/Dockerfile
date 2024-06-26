@@ -19,8 +19,9 @@ WORKDIR /usr/src/strapi
 # Копируем созданное Strapi-приложение из временного образа
 COPY --from=builder /tmp/strapi .
 
-# Открываем порт 1337, который используется Strapi
-EXPOSE 1337
+# Открываем порт $PORT, который используется Strapi
+ENV PORT=$PORT
+EXPOSE $PORT
 
 # Команда для запуска Strapi
 CMD ["yarn", "develop"]

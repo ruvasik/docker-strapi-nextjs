@@ -4,8 +4,10 @@ services:
       context: ../..
       dockerfile: docker/strapi/Dockerfile
     ports:
-      - 1337:1337
+      - '${PORT}:${PORT}'
     environment:
+      NODE_ENV: 'development'
+      PORT: ${PORT}
       DATABASE_CLIENT: sqlite
     working_dir: /usr/src/strapi
     stdin_open: true  # Позволяет использовать интерактивный режим
