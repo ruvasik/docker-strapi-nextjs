@@ -1,0 +1,16 @@
+services:
+  next-app:
+    build:
+      context: ../..
+      dockerfile: docker/nextjs/Dockerfile
+    ports:
+      - '3000:3000'
+    environment:
+      NODE_ENV: 'development'
+    volumes:
+      - type: bind
+        source: ../../frontend
+        target: /usr/app
+#    command: yarn dev
+    stdin_open: true  # Позволяет использовать интерактивный режим
+    tty: true         # Включает терминал

@@ -1,13 +1,13 @@
 services:
   strapi:
     build:
-      context: ..
-      dockerfile: docker/Dockerfile
+      context: ../..
+      dockerfile: docker/strapi/Dockerfile
     ports:
       - 1337:1337
     volumes:
       - type: bind
-        source: ../backend
+        source: ../../backend
         target: /usr/src/strapi
     environment:
       DATABASE_CLIENT: sqlite
