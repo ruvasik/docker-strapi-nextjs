@@ -1,13 +1,13 @@
 #!/bin/bash
 
-# Остановить скрипт при ошибке
+# Stop on error
 set -e
 
-# Инициализация переменных
+# Initialize env variables
 SH_MODE=false
 YARN_MODE=false
 
-# Проверка параметров
+# Set default values for env variables
 for arg in "$@"
 do
   case $arg in
@@ -21,7 +21,7 @@ do
   esac
 done
 
-# Функция для первичной сборки
+# First run build
 initial_build() {
   echo "Running initial build..."
   docker-compose -f docker/nextjs/docker-compose.build.yml build
@@ -30,33 +30,32 @@ initial_build() {
   container_id=$(docker-compose -f docker/nextjs/docker-compose.build.yml ps -q next-app)
   echo "Container ID: $container_id"
 
-  # Подождите немного, чтобы контейнер успел запуститься
-  sleep 10
+  sleep 5
 
-  # Копируйте файлы из контейнера в локальную директорию
+  # Copy to frontend folder
   echo "Copying files from container to host..."
   docker cp $container_id:/usr/app ./frontend
-
-  # Остановите и удалите контейнеры после копирования
-#  docker-compose -f docker/nextjs/docker-compose.build.yml down
 }
 
-# Проверьте, существует ли локальная директория /frontend
+# Check /frontend, if not - run initial build
 if [ ! -d "./frontend" ]; then
   initial_build
 fi
 
 if [ -z "$arg" ]; then
-  echo "yarn dev mode"
-  # Запуск контейнера с монтированием
+  echo "FRONTEND: yarn dev mode"
+
   docker-compose -f docker/nextjs/docker-compose.yml up -d
-  docker-compose -f docker/nextjs/docker-compose.yml exec next-app /bin/sh -c "yarn dev"
+#  docker-compose -f docker/nextjs/docker-compose.yml exec next-app /bin/sh -c "yarn dev"
+  docker-compose -f docker/nextjs/docker-compose.yml logs
 elif [ "$SH_MODE" = true ]; then
-  echo "sh mode";
+  echo "FRONTEND: sh mode";
+
   docker-compose -f docker/nextjs/docker-compose.yml up -d
   docker-compose -f docker/nextjs/docker-compose.yml exec next-app /bin/sh
 else
-  echo "yarn mode - $arg";
+  echo "FRONTEND: yarn mode with arg: $arg";
+
   docker-compose -f docker/nextjs/docker-compose.yml up -d
   docker-compose -f docker/nextjs/docker-compose.yml exec next-app /bin/sh -c "yarn $arg"
 fi

@@ -5,18 +5,18 @@ set -e
 
 # Функция для первичной сборки
 initial_build() {
-  echo "Running initial build..."
+  echo "BACKEND: Running initial build..."
   docker-compose -f docker/strapi/docker-compose.build.yml build
   docker-compose -f docker/strapi/docker-compose.build.yml up -d
 
   container_id=$(docker-compose -f docker/strapi/docker-compose.build.yml ps -q strapi)
-  echo "Container ID: $container_id"
+  echo "BACKEND: Container ID: $container_id"
 
   # Подождите немного, чтобы контейнер успел запуститься
   sleep 10
 
   # Копируйте файлы из контейнера в локальную директорию
-  echo "Copying files from container to host..."
+  echo "BACKEND: Copying files from container to host..."
   docker cp $container_id:/usr/src/strapi ./backend
 
   # Остановите и удалите контейнеры после копирования
@@ -25,7 +25,7 @@ initial_build() {
 
 # Функция для запуска контейнера с монтированием
 run_with_volume() {
-  echo "Running with volume mounted..."
+  echo "BACKEND: Running with volume mounted..."
    docker-compose -f docker/strapi/docker-compose.yml up
 }
 

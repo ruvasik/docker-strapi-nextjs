@@ -15,5 +15,4 @@ ENV NODE_ENV=development
 EXPOSE 3000
 
 # Указываем команду для запуска приложения
-CMD ["/bin/sh"]
-#CMD ["yarn", "dev"]
+CMD ["yarn", "dev"]
