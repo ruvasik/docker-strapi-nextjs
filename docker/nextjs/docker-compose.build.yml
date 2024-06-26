@@ -1,5 +1,5 @@
 services:
-  next-app:
+  dsn-nextjs:
     build:
       context: ../..
       dockerfile: docker/nextjs/Dockerfile

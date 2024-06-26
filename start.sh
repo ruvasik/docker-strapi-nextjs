@@ -9,6 +9,11 @@ if [ "$@" = "stop" ]; then
   docker-compose -f docker/strapi/docker-compose.build.yml stop
 
   exit 0
+elif [ "$@" = "down" ]; then
+  docker-compose -f docker/nextjs/docker-compose.build.yml down
+  docker-compose -f docker/strapi/docker-compose.build.yml down
+
+  exit 0
 fi
 
 

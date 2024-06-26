@@ -1,5 +1,5 @@
 services:
-  strapi:
+  dsn-strapi:
     build:
       context: ../..
       dockerfile: docker/strapi/Dockerfile
