@@ -1,5 +1,5 @@
 services:
-  dsn-strapi:
+  ${APP_NAME}-strapi:
     build:
       context: ../..
       dockerfile: docker/strapi/Dockerfile
@@ -9,12 +9,7 @@ services:
       NODE_ENV: 'development'
       PORT: ${BACKEND_PORT}
       DATABASE_CLIENT: sqlite
-    volumes:
-      - type: bind
-        source: ../../backend
-        target: /usr/src/strapi
     working_dir: /usr/src/strapi
     stdin_open: true  # Позволяет использовать интерактивный режим
     tty: true         # Включает терминал
-    networks:
-      - dsn-network
+

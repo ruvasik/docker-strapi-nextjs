@@ -1,5 +1,5 @@
 services:
-  dsn-nextjs:
+  ${APP_NAME}-nextjs:
     build:
       context: ../..
       dockerfile: docker/nextjs/Dockerfile
@@ -15,4 +15,4 @@ services:
     stdin_open: true
     tty: true
     networks:
-      - dsn-network
+      - ${APP_NAME}-network
