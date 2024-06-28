@@ -24,8 +24,8 @@ done
 # First run build
 initial_build() {
   echo "Running initial build..."
-  docker-compose -f docker/nextjs/docker-compose.build.yml build
-  docker-compose -f docker/nextjs/docker-compose.build.yml up -d
+  docker-compose --env-file .env -f docker/nextjs/docker-compose.build.yml -f docker/docker-compose.networks.yml build
+  docker-compose --env-file .env -f docker/nextjs/docker-compose.build.yml -f docker/docker-compose.networks.yml up -d
 
   container_id=$(docker-compose -f docker/nextjs/docker-compose.build.yml ps -q next-app)
   echo "Container ID: $container_id"
@@ -45,17 +45,17 @@ fi
 if [ -z "$arg" ]; then
   echo "FRONTEND: yarn dev mode"
 
-  docker-compose -f docker/nextjs/docker-compose.yml up -d
+  docker-compose --env-file .env -f docker/nextjs/docker-compose.yml -f docker/docker-compose.networks.yml up -d
 #  docker-compose -f docker/nextjs/docker-compose.yml exec next-app /bin/sh -c "yarn dev"
-  docker-compose -f docker/nextjs/docker-compose.yml logs
+  docker-compose --env-file .env -f docker/nextjs/docker-compose.yml -f docker/docker-compose.networks.yml logs
 elif [ "$SH_MODE" = true ]; then
   echo "FRONTEND: sh mode";
 
-  docker-compose -f docker/nextjs/docker-compose.yml up -d
-  docker-compose -f docker/nextjs/docker-compose.yml exec next-app /bin/sh
+  docker-compose --env-file .env -f docker/nextjs/docker-compose.yml -f docker/docker-compose.networks.yml up -d
+  docker-compose --env-file .env -f docker/nextjs/docker-compose.yml -f docker/docker-compose.networks.yml exec next-app /bin/sh
 else
   echo "FRONTEND: yarn mode with arg: $arg";
 
-  docker-compose -f docker/nextjs/docker-compose.yml up -d
-  docker-compose -f docker/nextjs/docker-compose.yml exec next-app /bin/sh -c "yarn $arg"
+  docker-compose --env-file .env -f docker/nextjs/docker-compose.yml -f docker/docker-compose.networks.yml up -d
+  docker-compose --env-file .env -f docker/nextjs/docker-compose.yml -f docker/docker-compose.networks.yml exec next-app /bin/sh -c "yarn $arg"
 fi

@@ -4,14 +4,15 @@ services:
       context: ../..
       dockerfile: docker/nextjs/Dockerfile
     ports:
-      - '${PORT}:${PORT}'
+      - '${FRONTEND_PORT}:${FRONTEND_PORT}'
     environment:
       NODE_ENV: 'development'
-      PORT: ${PORT}
+      PORT: ${FRONTEND_PORT}
     volumes:
       - type: bind
         source: ../../frontend
         target: /usr/app
-#    command: yarn dev
-    stdin_open: true  # Позволяет использовать интерактивный режим
-    tty: true         # Включает терминал
+    stdin_open: true
+    tty: true
+    networks:
+      - dsn-network

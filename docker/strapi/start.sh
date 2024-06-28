@@ -6,10 +6,10 @@ set -e
 # Функция для первичной сборки
 initial_build() {
   echo "BACKEND: Running initial build..."
-  docker-compose -f docker/strapi/docker-compose.build.yml build
-  docker-compose -f docker/strapi/docker-compose.build.yml up -d
+  docker-compose --env-file .env -f docker/strapi/docker-compose.yml -f docker/docker-compose.networks.yml build
+  docker-compose --env-file .env -f docker/strapi/docker-compose.yml -f docker/docker-compose.networks.yml up -d
 
-  container_id=$(docker-compose -f docker/strapi/docker-compose.build.yml ps -q strapi)
+  container_id=$(docker-compose --env-file .env -f docker/strapi/docker-compose.build.yml ps -q strapi)
   echo "BACKEND: Container ID: $container_id"
 
   # Подождите немного, чтобы контейнер успел запуститься
@@ -26,7 +26,7 @@ initial_build() {
 # Функция для запуска контейнера с монтированием
 run_with_volume() {
   echo "BACKEND: Running with volume mounted..."
-   docker-compose -f docker/strapi/docker-compose.yml up
+   docker-compose --env-file .env -f docker/strapi/docker-compose.yml -f docker/docker-compose.networks.yml up
 }
 
 # Проверьте, существует ли локальная директория /backend
