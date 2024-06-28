@@ -13,8 +13,8 @@ initial_build() {
 
   envsubst < docker/strapi/docker-compose.build.tpl.yml > docker/strapi/docker-compose.build.yml
 
-  docker-compose --env-file .env -f docker/strapi/docker-compose.yml -f docker/docker-compose.networks.yml build
-  docker-compose --env-file .env -f docker/strapi/docker-compose.yml -f docker/docker-compose.networks.yml up -d
+  docker-compose --env-file .env -f docker/strapi/docker-compose.build.yml -f docker/docker-compose.networks.yml build
+  docker-compose --env-file .env -f docker/strapi/docker-compose.build.yml -f docker/docker-compose.networks.yml up -d
 
   container_id=$(docker-compose --env-file .env -f docker/strapi/docker-compose.build.yml ps -q "${SERVICE}")
   echo "BACKEND: Container ID: $container_id"
