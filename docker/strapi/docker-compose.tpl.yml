@@ -1,5 +1,6 @@
 services:
   ${APP_NAME}-strapi:
+    image: ${APP_NAME}-strapi
     build:
       context: ../..
       dockerfile: docker/strapi/Dockerfile

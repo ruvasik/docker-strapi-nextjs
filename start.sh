@@ -1,32 +1,69 @@
 #!/bin/bash
 
-# Stop on error
+# Остановить выполнение при ошибке
 set -e
 
+# Загрузить переменные окружения из .env файла
+export $(grep -v '^#' .env | xargs)
 
-if [ "$@" = "stop" ]; then
-  docker-compose -f docker/docker-compose.networks.yml -f docker/nextjs/docker-compose.build.yml stop
-  docker-compose -f docker/docker-compose.networks.yml -f docker/strapi/docker-compose.build.yml stop
+# Проверить, задана ли переменная APP_NAME
+if [ -z "$APP_NAME" ]; then
+  echo "Ошибка: Переменная APP_NAME не задана."
+  exit 1
+fi
 
+# Установить имена сервисов
+SERVICE_STRAPI="${APP_NAME}-strapi"
+SERVICE_NEXTJS="${APP_NAME}-nextjs"
+
+stop_container() {
+  local container_name="$1"
+  local container_id
+  container_id=$(docker ps -qf "name=${container_name}")
+
+  if [ -n "$container_id" ]; then
+    echo "Остановка контейнера ${container_name}..."
+    docker stop "$container_id" || echo "Не удалось остановить контейнер ${container_name}."
+  else
+    echo "Контейнер ${container_name} не найден."
+  fi
+}
+
+remove_container() {
+  local container_name="$1"
+  local container_id
+  container_id=$(docker ps -a -qf "name=${container_name}")
+
+  if [ -n "$container_id" ]; then
+    echo "Удаление контейнера ${container_name}..."
+    docker rm "$container_id" || echo "Не удалось удалить контейнер ${container_name}."
+  else
+    echo "Контейнер ${container_name} не найден."
+  fi
+}
+
+if [ "$1" = "stop" ]; then
+  stop_container "$SERVICE_STRAPI"
+  stop_container "$SERVICE_NEXTJS"
   exit 0
-elif [ "$@" = "down" ]; then
-  docker-compose -f docker/docker-compose.networks.yml -f docker/nextjs/docker-compose.build.yml down
-  docker-compose -f docker/docker-compose.networks.yml -f docker/strapi/docker-compose.build.yml down
-
+elif [ "$1" = "down" ]; then
+  stop_container "$SERVICE_STRAPI"
+  stop_container "$SERVICE_NEXTJS"
+  remove_container "$SERVICE_STRAPI"
+  remove_container "$SERVICE_NEXTJS"
   exit 0
 fi
 
-
-# Run strapi in background
-echo "Backend strapi start..."
+# Запуск Strapi в фоне
+echo "Запуск backend ${SERVICE_STRAPI}..."
 ./docker/strapi/start.sh &
 PID1=$!
 
-# Run NextJS in background
-echo "Frontend nextjs start..."
+# Запуск NextJS в фоне
+echo "Запуск frontend ${SERVICE_NEXTJS}..."
 ./docker/nextjs/start.sh &
 PID2=$!
 
-# Wait for strapi and nextjs to finish
+# Ожидание завершения Strapi и NextJS
 wait $PID1
 wait $PID2
