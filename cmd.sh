@@ -36,9 +36,9 @@ fi
 # Запуск Strapi
 echo "Запуск backend..."
 if [ "$1" = "bg" ]; then
-  ./docker/strapi/start.sh bg &
+  ./docker/strapi/cmd.sh bg &
 else
-  ./docker/strapi/start.sh &
+  ./docker/strapi/cmd.sh &
 fi
 PID1=$!
 echo "PID Strapi: $PID1"
@@ -46,9 +46,9 @@ echo "PID Strapi: $PID1"
 # Запуск NextJS
 echo "Запуск frontend..."
 if [ "$1" = "bg" ]; then
-  ./docker/nextjs/start.sh bg &
+  ./docker/nextjs/cmd.sh bg &
 else
-  ./docker/nextjs/start.sh &
+  ./docker/nextjs/cmd.sh &
 fi
 PID2=$!
 echo "PID NextJS: $PID2"
