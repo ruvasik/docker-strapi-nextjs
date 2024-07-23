@@ -3,67 +3,59 @@
 # Остановить выполнение при ошибке
 set -e
 
-# Загрузить переменные окружения из .env файла
+# Загрузить переменные окружения
 export $(grep -v '^#' .env | xargs)
 
-# Проверить, задана ли переменная APP_NAME
+# Проверить наличие переменной APP_NAME
 if [ -z "$APP_NAME" ]; then
   echo "Ошибка: Переменная APP_NAME не задана."
   exit 1
 fi
 
-# Установить имена сервисов
-SERVICE_STRAPI="${APP_NAME}-strapi"
-SERVICE_NEXTJS="${APP_NAME}-nextjs"
-
-stop_container() {
-  local container_name="$1"
-  local container_id
-  container_id=$(docker ps -qf "name=${container_name}")
-
-  if [ -n "$container_id" ]; then
-    echo "Остановка контейнера ${container_name}..."
-    docker stop "$container_id" || echo "Не удалось остановить контейнер ${container_name}."
-  else
-    echo "Контейнер ${container_name} не найден."
-  fi
+# Обработка сигнала прерывания
+handle_signal() {
+  echo "Получен сигнал прерывания, завершаем процессы..."
+  docker-compose -f docker/strapi/docker-compose.yml -f docker/docker-compose.networks.yml stop
+  docker-compose -f docker/nextjs/docker-compose.yml -f docker/docker-compose.networks.yml stop
+  exit 0
 }
 
-remove_container() {
-  local container_name="$1"
-  local container_id
-  container_id=$(docker ps -a -qf "name=${container_name}")
-
-  if [ -n "$container_id" ]; then
-    echo "Удаление контейнера ${container_name}..."
-    docker rm "$container_id" || echo "Не удалось удалить контейнер ${container_name}."
-  else
-    echo "Контейнер ${container_name} не найден."
-  fi
-}
+# Ловушка для сигналов
+trap 'handle_signal' SIGINT SIGTERM
 
 if [ "$1" = "stop" ]; then
-  stop_container "$SERVICE_STRAPI"
-  stop_container "$SERVICE_NEXTJS"
+  docker-compose -f docker/strapi/docker-compose.yml -f docker/docker-compose.networks.yml stop
+  docker-compose -f docker/nextjs/docker-compose.yml -f docker/docker-compose.networks.yml stop
   exit 0
 elif [ "$1" = "down" ]; then
-  stop_container "$SERVICE_STRAPI"
-  stop_container "$SERVICE_NEXTJS"
-  remove_container "$SERVICE_STRAPI"
-  remove_container "$SERVICE_NEXTJS"
+  docker-compose -f docker/strapi/docker-compose.yml -f docker/docker-compose.networks.yml down
+  docker-compose -f docker/nextjs/docker-compose.yml -f docker/docker-compose.networks.yml down
   exit 0
 fi
 
-# Запуск Strapi в фоне
-echo "Запуск backend ${SERVICE_STRAPI}..."
-./docker/strapi/start.sh &
+# Запуск Strapi
+echo "Запуск backend..."
+if [ "$1" = "bg" ]; then
+  ./docker/strapi/start.sh bg &
+else
+  ./docker/strapi/start.sh &
+fi
 PID1=$!
+echo "PID Strapi: $PID1"
 
-# Запуск NextJS в фоне
-echo "Запуск frontend ${SERVICE_NEXTJS}..."
-./docker/nextjs/start.sh &
+# Запуск NextJS
+echo "Запуск frontend..."
+if [ "$1" = "bg" ]; then
+  ./docker/nextjs/start.sh bg &
+else
+  ./docker/nextjs/start.sh &
+fi
 PID2=$!
+echo "PID NextJS: $PID2"
 
-# Ожидание завершения Strapi и NextJS
-wait $PID1
-wait $PID2
+if [ "$1" != "bg" ]; then
+  # Ожидание завершения процессов
+  wait $PID1
+  wait $PID2
+  handle_signal
+fi
